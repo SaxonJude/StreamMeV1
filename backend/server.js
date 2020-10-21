@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const express = require('express');
 const passport = require('passport');
+const path = require('path');
 const cors = require('cors');
 const app = express();
 
@@ -10,7 +11,7 @@ require('dotenv').config();
 const port = process.env.PORT || 5000;
 
 // Connect to DB
-mongoose.connect(process.env.ATLAS_URI, { useNewUrlParser: true }, () => console.log('MongoDB database connection established successfully'));
+mongoose.connect('mongodb+srv://Saxon1233:Saxon1233@cluster1.kzen1.gcp.mongodb.net/userAuth?retryWrites=true&w=majority', { useNewUrlParser: true }, () => console.log('MongoDB database connection established successfully'));
 
 app.use(passport.initialize());
 require('./config/passport')(passport);
@@ -19,7 +20,12 @@ require('./config/passport')(passport);
 app.use(express.json());
 app.use(cors());
 
-// Route Middlewares
-app.use('/api/users', require('./routes/user.routes'));
+app.use(express.static(path.join(__dirname, '../build')))
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../build'))
+})
 
-app.listen(port, () => console.log(`Server started on port: ${port}`));
+// Route Middlewares
+app.use('/api/users', require('./routes/user.route'));
+
+app.listen(port, () => console.log(`Server started on port: ${port} :)`));
